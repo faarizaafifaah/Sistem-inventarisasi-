@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Assetly - Sistem Aset Kantor</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+        <div class="brand">
+            <div class="brand-icon">✦</div>
+
+            <div>
+                <div class="brand-name">ASSETLY</div>
+                <div class="brand-sub">Office Asset System</div>
+            </div>
+        </div>
+
+        <div class="menu-label">MENU UTAMA</div>
+
+        <button class="menu active" onclick="showPage('dashboard', this)">
+            <span>⌂</span>
+            <span>Dashboard</span>
+        </button>
+
+        <button class="menu" onclick="showPage('aset', this)">
+            <span>▣</span>
+            <span>Data Aset</span>
+        </button>
+
+        <button class="menu" onclick="showPage('kategori', this)">
+            <span>◈</span>
+            <span>Kategori</span>
+        </button>
+
+        <button class="menu" onclick="showPage('pelepasan', this)">
+            <span>↗</span>
+            <span>Pelepasan</span>
+        </button>
+
+        <div class="sidebar-bottom">
+            <div class="mini-profile">
+                <div class="profile-circle">A</div>
+
+                <div>
+                    <strong>Administrator</strong>
+                    <small>Asset Management</small>
+                </div>
+            </div>
+        </div>
+
+    </aside>
+
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- ================= DASHBOARD ================= -->
+        <section id="dashboard" class="page active-page">
+
+            <div class="topbar">
+
+                <div>
+                    <div class="page-title">
+                        Halo, Admin! ✨
+                    </div>
+
+                    <div class="page-subtitle">
+                        Yuk cek kondisi aset kantor hari ini.
+                    </div>
+                </div>
+
+                <div class="date-box">
+                    <span>📅</span>
+                    <span id="today"></span>
+                </div>
+
+            </div>
+
+
+            <!-- CARDS -->
+            <div class="cards">
+
+                <div class="card">
+                    <div class="card-top">
+                        <div class="card-label">TOTAL ASET</div>
+                        <div class="card-icon purple-icon">▣</div>
+                    </div>
+
+                    <div class="card-number" id="totalAset">
+                        0
+                    </div>
+
+                    <div class="card-desc">
+                        Seluruh aset terdaftar
+                    </div>
+                </div>
+
+
+                <div class="card">
+                    <div class="card-top">
+                        <div class="card-label">ASET AKTIF</div>
+                        <div class="card-icon green-icon">✓</div>
+                    </div>
+
+                    <div class="card-number" id="asetAktif">
+                        0
+                    </div>
+
+                    <div class="card-desc">
+                        Masih digunakan
+                    </div>
+                </div>
+
+
+                <div class="card">
+                    <div class="card-top">
+                        <div class="card-label">TIDAK AKTIF</div>
+                        <div class="card-icon orange-icon">◷</div>
+                    </div>
+
+                    <div class="card-number" id="asetTidakAktif">
+                        0
+                    </div>
+
+                    <div class="card-desc">
+                        Perlu perhatian
+                    </div>
+                </div>
+
+
+                <div class="card">
+                    <div class="card-top">
+                        <div class="card-label">DILEPAS</div>
+                        <div class="card-icon pink-icon">↗</div>
+                    </div>
+
+                    <div class="card-number" id="asetDilepas">
+                        0
+                    </div>
+
+                    <div class="card-desc">
+                        Sudah dilepas
+                    </div>
+                </div>
+
+            </div>
+
+
+            <!-- DASHBOARD CONTENT -->
+            <div class="dashboard-grid">
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>📋 Aset Terbaru</h3>
+                            <p>Data aset yang terakhir ditambahkan</p>
+                        </div>
+
+                        <button class="text-button"
+                                onclick="showPageById('aset')">
+                            Lihat semua →
+                        </button>
+
+                    </div>
+
+                    <div class="table-wrapper">
+
+                        <table>
+
+                            <thead>
+                                <tr>
+                                    <th>ASET</th>
+                                    <th>KATEGORI</th>
+                                    <th>KONDISI</th>
+                                    <th>STATUS</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="asetTerbaru">
+                                <tr>
+                                    <td colspan="4" class="empty">
+                                        Memuat data...
+                                    </td>
+                                </tr>
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+
+                <div class="panel">
+
+                    <div class="panel-header">
+
+                        <div>
+                            <h3>💰 Ringkasan Nilai</h3>
+                            <p>Total nilai perolehan aset</p>
+                        </div>
+
+                    </div>
+
+                    <div class="value-box">
+
+                        <span>Total Nilai Perolehan</span>
+
+                        <strong id="totalNilai">
+                            Rp 0
+                        </strong>
+
+                    </div>
+
+                    <div class="category-summary">
+
+                        <div class="summary-item">
+                            <div class="summary-left">
+                                <div class="summary-icon">💻</div>
+
+                                <div>
+                                    <strong>Komputer</strong>
+                                    <small id="jumlahKomputer">
+                                        0 aset
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="summary-item">
+                            <div class="summary-left">
+                                <div class="summary-icon">🪑</div>
+
+                                <div>
+                                    <strong>Furniture</strong>
+                                    <small id="jumlahFurniture">
+                                        0 aset
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="summary-item">
+                            <div class="summary-left">
+                                <div class="summary-icon">🖨️</div>
+
+                                <div>
+                                    <strong>Elektronik</strong>
+                                    <small id="jumlahElektronik">
+                                        0 aset
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= DATA ASET ================= -->
+        <section id="aset" class="page">
+
+            <div class="topbar">
+
+                <div>
+                    <div class="page-title">
+                        Data Aset 📦
+                    </div>
+
+                    <div class="page-subtitle">
+                        Kelola seluruh aset kantor.
+                    </div>
+                </div>
+
+                <button class="primary-button"
+                        onclick="openAsetModal()">
+                    + Tambah Aset
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="filter-bar">
+
+                    <div class="search-box">
+                        <span>⌕</span>
+
+                        <input
+                            type="text"
+                            id="searchAset"
+                            placeholder="Cari kode atau nama aset..."
+                            oninput="filterAset()"
+                        >
+                    </div>
+
+
+                    <select id="filterStatus"
+                            onchange="filterAset()">
+
+                        <option value="">Semua Status</option>
+                        <option value="Aktif">Aktif</option>
+                        <option value="Tidak Aktif">Tidak Aktif</option>
+                        <option value="Dilepas">Dilepas</option>
+
+                    </select>
+
+
+                    <select id="filterKondisi"
+                            onchange="filterAset()">
+
+                        <option value="">Semua Kondisi</option>
+                        <option value="Baik">Baik</option>
+                        <option value="Rusak Ringan">Rusak Ringan</option>
+                        <option value="Rusak Berat">Rusak Berat</option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>KODE</th>
+                                <th>NAMA ASET</th>
+                                <th>KATEGORI</th>
+                                <th>LOKASI</th>
+                                <th>TANGGAL</th>
+                                <th>HARGA</th>
+                                <th>KONDISI</th>
+                                <th>STATUS</th>
+                                <th>AKSI</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabelAset">
+                            <tr>
+                                <td colspan="9" class="empty">
+                                    Memuat data...
+                                </td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= KATEGORI ================= -->
+        <section id="kategori" class="page">
+
+            <div class="topbar">
+
+                <div>
+                    <div class="page-title">
+                        Kategori 🗂️
+                    </div>
+
+                    <div class="page-subtitle">
+                        Kelompokkan aset agar lebih mudah dikelola.
+                    </div>
+                </div>
+
+                <button class="primary-button"
+                        onclick="openKategoriModal()">
+                    + Tambah Kategori
+                </button>
+
+            </div>
+
+
+            <div class="category-grid"
+                 id="kategoriContainer">
+
+                <div class="empty-card">
+                    Memuat kategori...
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- ================= PELEPASAN ================= -->
+        <section id="pelepasan" class="page">
+
+            <div class="topbar">
+
+                <div>
+                    <div class="page-title">
+                        Pelepasan Aset ↗
+                    </div>
+
+                    <div class="page-subtitle">
+                        Catat aset yang sudah tidak digunakan atau dilepas.
+                    </div>
+                </div>
+
+                <button class="primary-button"
+                        onclick="openPelepasanModal()">
+                    + Catat Pelepasan
+                </button>
+
+            </div>
+
+
+            <div class="panel">
+
+                <div class="table-wrapper">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>ASET</th>
+                                <th>TANGGAL</th>
+                                <th>ALASAN</th>
+                                <th>NILAI PELEPASAN</th>
+                                <th>KETERANGAN</th>
+                                <th>AKSI</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabelPelepasan">
+                            <tr>
+                                <td colspan="6" class="empty">
+                                    Memuat data...
+                                </td>
+                            </tr>
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+
+<!-- ================= MODAL ASET ================= -->
+
+<div id="modalAset" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+                <h2 id="judulModalAset">
+                    Tambah Aset
+                </h2>
+
+                <p>Isi informasi aset dengan lengkap.</p>
+            </div>
+
+            <button class="close-button"
+                    onclick="closeAsetModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="formAset">
+
+            <input type="hidden"
+                   id="id_aset">
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+                    <label>Kode Aset</label>
+
+                    <input
+                        type="text"
+                        id="kode_aset"
+                        placeholder="Contoh: AST-001"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label>Nama Aset</label>
+
+                    <input
+                        type="text"
+                        id="nama_aset"
+                        placeholder="Contoh: Laptop Lenovo"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label>Kategori</label>
+
+                    <select id="id_kategori"
+                            required>
+
+                        <option value="">
+                            Pilih kategori
+                        </option>
+
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Lokasi</label>
+
+                    <input
+                        type="text"
+                        id="lokasi"
+                        placeholder="Contoh: Ruang Admin"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label>Tanggal Perolehan</label>
+
+                    <input
+                        type="date"
+                        id="tanggal_perolehan"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label>Harga Perolehan</label>
+
+                    <input
+                        type="number"
+                        id="harga_perolehan"
+                        min="0"
+                        placeholder="0"
+                        required
+                    >
+                </div>
+
+
+                <div class="form-group">
+                    <label>Kondisi</label>
+
+                    <select id="kondisi"
+                            required>
+
+                        <option value="">
+                            Pilih kondisi
+                        </option>
+
+                        <option value="Baik">
+                            Baik
+                        </option>
+
+                        <option value="Rusak Ringan">
+                            Rusak Ringan
+                        </option>
+
+                        <option value="Rusak Berat">
+                            Rusak Berat
+                        </option>
+
+                    </select>
+                </div>
+
+
+                <div class="form-group">
+                    <label>Status Aset</label>
+
+                    <select id="status_aset"
+                            required>
+
+                        <option value="Aktif">
+                            Aktif
+                        </option>
+
+                        <option value="Tidak Aktif">
+                            Tidak Aktif
+                        </option>
+
+                        <option value="Dilepas">
+                            Dilepas
+                        </option>
+
+                    </select>
+                </div>
+
+            </div>
+
+
+            <div class="modal-buttons">
+
+                <button type="button"
+                        class="secondary-button"
+                        onclick="closeAsetModal()">
+                    Batal
+                </button>
+
+                <button type="submit"
+                        class="primary-button">
+                    Simpan Aset
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= MODAL KATEGORI ================= -->
+
+<div id="modalKategori" class="modal">
+
+    <div class="modal-content small">
+
+        <div class="modal-header">
+
+            <div>
+                <h2 id="judulModalKategori">
+                    Tambah Kategori
+                </h2>
+
+                <p>Buat kategori baru untuk aset.</p>
+            </div>
+
+            <button class="close-button"
+                    onclick="closeKategoriModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="formKategori">
+
+            <input type="hidden"
+                   id="editKategori">
+
+
+            <div class="form-group">
+
+                <label>Nama Kategori</label>
+
+                <input
+                    type="text"
+                    id="nama_kategori"
+                    placeholder="Contoh: Komputer"
+                    required
+                >
+
+            </div>
+
+
+            <div class="modal-buttons">
+
+                <button type="button"
+                        class="secondary-button"
+                        onclick="closeKategoriModal()">
+                    Batal
+                </button>
+
+                <button type="submit"
+                        class="primary-button">
+                    Simpan
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= MODAL PELEPASAN ================= -->
+
+<div id="modalPelepasan" class="modal">
+
+    <div class="modal-content">
+
+        <div class="modal-header">
+
+            <div>
+                <h2>Catat Pelepasan</h2>
+
+                <p>Masukkan informasi pelepasan aset.</p>
+            </div>
+
+            <button class="close-button"
+                    onclick="closePelepasanModal()">
+                ×
+            </button>
+
+        </div>
+
+
+        <form id="formPelepasan">
+
+            <div class="form-group">
+
+                <label>Pilih Aset</label>
+
+                <select id="pelepasan_id_aset"
+                        required>
+
+                    <option value="">
+                        Pilih aset
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-grid">
+
+                <div class="form-group">
+
+                    <label>Tanggal Pelepasan</label>
+
+                    <input
+                        type="date"
+                        id="tanggal_pelepasan"
+                        required
+                    >
+
+                </div>
+
+
+                <div class="form-group">
+
+                    <label>Nilai Pelepasan</label>
+
+                    <input
+                        type="number"
+                        id="nilai_pelepasan"
+                        min="0"
+                        placeholder="0"
+                        required
+                    >
+
+                </div>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Alasan</label>
+
+                <select id="alasan"
+                        required>
+
+                    <option value="">
+                        Pilih alasan
+                    </option>
+
+                    <option value="Rusak Berat">
+                        Rusak Berat
+                    </option>
+
+                    <option value="Tidak Digunakan">
+                        Tidak Digunakan
+                    </option>
+
+                    <option value="Dijual">
+                        Dijual
+                    </option>
+
+                    <option value="Hilang">
+                        Hilang
+                    </option>
+
+                    <option value="Lainnya">
+                        Lainnya
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label>Keterangan</label>
+
+                <textarea
+                    id="keterangan"
+                    rows="4"
+                    placeholder="Tambahkan keterangan jika diperlukan..."
+                ></textarea>
+
+            </div>
+
+
+            <div class="modal-buttons">
+
+                <button type="button"
+                        class="secondary-button"
+                        onclick="closePelepasanModal()">
+                    Batal
+                </button>
+
+                <button type="submit"
+                        class="primary-button">
+                    Simpan Pelepasan
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script src="script.js"></script>
+
+</body>
+</html>
